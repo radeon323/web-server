@@ -1,7 +1,6 @@
 package com.olshevchenko.webserver;
 
 import com.olshevchenko.webserver.entity.Request;
-import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
 import java.io.IOException;

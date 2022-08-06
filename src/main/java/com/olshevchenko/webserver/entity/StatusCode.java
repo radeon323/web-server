@@ -2,7 +2,6 @@ package com.olshevchenko.webserver.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * @author Oleksandr Shevchenko

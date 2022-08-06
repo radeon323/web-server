@@ -1,5 +1,6 @@
 package com.olshevchenko.webserver.exception;
 
+import com.olshevchenko.webserver.entity.Response;
 import com.olshevchenko.webserver.entity.StatusCode;
 
 /**

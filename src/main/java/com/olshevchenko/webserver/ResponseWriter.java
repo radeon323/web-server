@@ -7,12 +7,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.rmi.ServerException;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author Oleksandr Shevchenko
  */
-public class ResponseWriter implements AutoCloseable {
-    private final BufferedWriter bufferedWriter;
+public abstract class ResponseWriter {
     private static final String RESPONSE = "HTTP/1.1 %s\r\n";
     private static final String BLANK =
             "<!DOCTYPE html>" +
@@ -25,46 +26,48 @@ public class ResponseWriter implements AutoCloseable {
                         "</body>" +
                     "</html>";
 
-    public ResponseWriter(BufferedWriter bufferedWriter) {
-        this.bufferedWriter = bufferedWriter;
-    }
-
-    public void writeResponse(Response response) throws IOException {
+    public static void writeResponse(BufferedWriter bufferedWriter, Response response) throws IOException {
         try {
             StatusCode statusCode = response.getStatusCode();
             bufferedWriter.write(String.format(RESPONSE, statusCode));
-            bufferedWriter.newLine();
-            bufferedWriter.newLine();
-            writeContent(response);
+            if (response.getHeaders() != null) {
+                writeHeaders(bufferedWriter, response.getHeaders());
+            }
+            bufferedWriter.write("\r\n");
+            writeContent(bufferedWriter, response);
         } catch (IOException e) {
             throw new ServerException("An I/O exception occurred", e);
         }
     }
 
-    public void writeResponse(StatusCode statusCode) throws IOException {
+    public static void writeResponse(BufferedWriter bufferedWriter, StatusCode statusCode) throws IOException {
         try {
             bufferedWriter.write(String.format(RESPONSE, statusCode));
-            bufferedWriter.newLine();
-            bufferedWriter.newLine();
+            bufferedWriter.write("\r\n");
             bufferedWriter.write(String.format(BLANK, statusCode));
         } catch (IOException e) {
             throw new ServerException("An I/O exception occurred", e);
         }
     }
 
-    private void writeContent(Response response) throws IOException {
+    private static void writeContent(BufferedWriter bufferedWriter, Response response) throws IOException {
         BufferedReader bufferedReader = response.getContent();
-        char[] buffer = new char[1024];
-        while (bufferedReader.read(buffer) != -1) {
-            bufferedWriter.write(buffer);
-            bufferedWriter.newLine();
+        if (bufferedReader != null) {
+            char[] buffer = new char[1024];
+            int count;
+            while ((count = bufferedReader.read(buffer)) != -1) {
+                bufferedWriter.write(buffer, 0, count);
+                bufferedWriter.newLine();
+            }
+            bufferedReader.close();
         }
-        bufferedReader.close();
+    }
+
+    private static void writeHeaders(BufferedWriter bufferedWriter, Map<String, String[]> headers) throws IOException {
+        for (Map.Entry<String, String[]> header : headers.entrySet()) {
+            bufferedWriter.write(String.format("%s: %s%n", header.getKey(), Arrays.toString(header.getValue())));
+        }
     }
 
 
-    @Override
-    public void close() throws Exception {
-        bufferedWriter.close();
-    }
 }

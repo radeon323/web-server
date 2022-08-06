@@ -1,5 +1,8 @@
 package com.olshevchenko.webserver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,17 +15,20 @@ public class Server {
     private static int portNumber;
     private static String webAppPath;
 
-    static void start() throws IOException {
+    Logger logger = LoggerFactory.getLogger(getClass());
+
+    void start() throws Exception {
 
         try (ServerSocket serverSocket = new ServerSocket(portNumber);) {
-            System.out.println("Server started!");
+            logger.info("Server started!");
             while (!serverSocket.isClosed()) {
                 try (Socket socket = serverSocket.accept();
                      BufferedReader bufferedReader = new BufferedReader(
                              new InputStreamReader(socket.getInputStream()));
-                     ResponseWriter responseWriter = new ResponseWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())))) {
+                     BufferedWriter bufferedWriter = new BufferedWriter(
+                             new OutputStreamWriter(socket.getOutputStream())) ) {
 
-                    RequestHandler requestHandler = new RequestHandler(webAppPath, bufferedReader, responseWriter);
+                    RequestHandler requestHandler = new RequestHandler(webAppPath, bufferedReader, bufferedWriter);
                     requestHandler.handle();
 
                 } catch (Exception e) {
@@ -31,8 +37,7 @@ public class Server {
             }
         }
 
-
-        System.out.println("Finish");
+        logger.info("Server stopped");
 
     }
 
