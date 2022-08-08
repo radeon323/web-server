@@ -32,7 +32,8 @@ public class Server {
                     requestHandler.handle();
 
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    throw new RuntimeException("Could not start server", e);
                 }
             }
         }

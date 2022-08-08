@@ -57,7 +57,7 @@ public abstract class ResponseWriter {
             int count;
             while ((count = bufferedReader.read(buffer)) != -1) {
                 bufferedWriter.write(buffer, 0, count);
-                bufferedWriter.newLine();
+                bufferedWriter.write("\r\n");
             }
             bufferedReader.close();
         }

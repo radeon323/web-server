@@ -28,10 +28,12 @@ public class Request {
 
     private String showMap(Map<String, String[]> map) {
         StringBuffer sb = new StringBuffer();
-        for (Map.Entry<String, String[]> stringEntry : map.entrySet()) {
-            sb.append(stringEntry.getKey()).append(": ");
-            sb.append(Arrays.toString(stringEntry.getValue())).append(" ");
-        }
+            for (Map.Entry<String, String[]> stringEntry : map.entrySet()) {
+                sb.append(stringEntry.getKey()).append(": ");
+                sb.append(Arrays.toString(stringEntry.getValue())).append(" ");
+            }
         return sb.toString();
     }
+
+
 }

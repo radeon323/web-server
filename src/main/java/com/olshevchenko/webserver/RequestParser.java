@@ -48,7 +48,7 @@ public class RequestParser {
             String[] header = line.split(": ");
             String[] options = header[1].split(", ");
             headers.put(header[0], options);
-        }
+            }
         request.setHeaders(headers);
     }
 }
